@@ -1,4 +1,4 @@
-import React, { createRef } from 'react';
+import React, { useRef } from 'react';
 import {
   findNodeHandle,
   NativeSyntheticEvent,
@@ -24,45 +24,39 @@ type Props = {
   aspectRatio?: { width: number; height: number };
 };
 
-class CropView extends React.PureComponent<Props> {
-  public static defaultProps = {
-    keepAspectRatio: false,
-  };
+const CropView = (props: Props) => {
+  const { keepAspectRatio = false, sourceUrl, style, onImageCrop, aspectRatio } = props;
 
-  private viewRef = createRef<any>();
+  const viewRef = useRef();
 
-  public saveImage = (preserveTransparency: boolean = true, quality: number = 90) => {
+  const saveImage = (preserveTransparency: boolean = true, quality: number = 90) => {
     UIManager.dispatchViewManagerCommand(
-      findNodeHandle(this.viewRef.current!),
+      findNodeHandle(viewRef.current!),
       UIManager.getViewManagerConfig('CropView').Commands.saveImage,
       [preserveTransparency, quality]
     );
   };
 
-  public rotateImage = (clockwise: boolean = true) => {
+  const rotateImage = (clockwise: boolean = true) => {
     UIManager.dispatchViewManagerCommand(
-      findNodeHandle(this.viewRef.current!),
+      findNodeHandle(viewRef.current!),
       UIManager.getViewManagerConfig('CropView').Commands.rotateImage,
       [clockwise]
     );
   };
 
-  public render() {
-    const { sourceUrl, style, onImageCrop, keepAspectRatio, aspectRatio } = this.props;
-
-    return (
-      <RCTCropView
-        ref={this.viewRef}
-        sourceUrl={sourceUrl}
-        style={style}
-        onImageSaved={(event: NativeSyntheticEvent<Response>) => {
-          onImageCrop!(event.nativeEvent);
-        }}
-        keepAspectRatio={keepAspectRatio}
-        cropAspectRatio={aspectRatio}
-      />
-    );
-  }
-}
+  return (
+    <RCTCropView
+      ref={viewRef}
+      sourceUrl={sourceUrl}
+      style={style}
+      onImageSaved={(event: NativeSyntheticEvent<Response>) => {
+        onImageCrop!(event.nativeEvent);
+      }}
+      keepAspectRatio={keepAspectRatio}
+      cropAspectRatio={aspectRatio}
+    />
+  );
+};
 
 export default CropView;
