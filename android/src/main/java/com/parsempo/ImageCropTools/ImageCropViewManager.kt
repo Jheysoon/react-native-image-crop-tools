@@ -13,6 +13,7 @@ import com.canhub.cropper.CropImageView
 import com.facebook.react.uimanager.events.RCTEventEmitter
 import java.io.File
 import java.util.*
+import android.util.Log;
 
 class ImageCropViewManager: SimpleViewManager<CropImageView>() {
     companion object {
@@ -30,6 +31,8 @@ class ImageCropViewManager: SimpleViewManager<CropImageView>() {
     override fun createViewInstance(reactContext: ThemedReactContext): CropImageView {
         val view =  CropImageView(reactContext)
         view.setOnCropImageCompleteListener { _, result ->
+            Log.e('ImageCropViewManager', 'setOnCropImageCompleteListener');
+            Log.e(result);
             if (result.isSuccessful) {
                 val map = Arguments.createMap()
                 map.putString("uri", result.getUriFilePath(reactContext).toString())
